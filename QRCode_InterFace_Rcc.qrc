@@ -1,0 +1,10 @@
+<RCC>
+  <qresource prefix="img">
+    <file>NG.png</file>
+    <file>NO.png</file>
+    <file>OK.png</file>
+    <file>out.png</file>
+    <file>play.png</file>
+    <file>stop.png</file>
+  </qresource>
+</RCC>
