@@ -24,8 +24,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.bn_Start.clicked.connect(self.Start)
 
         # 全局变量
-        global QRcode_Message
+        global QRcode_Message, img_NG, img_OK
         QRcode_Message = ""
+        img_NG = QPixmap('NG')
+        img_OK = QPixmap('OK')
+
 
 
     # 重写鼠标移动事件
@@ -48,16 +51,22 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def Start(self):
         def onKeyboardEvent(event):
-            global QRcode_Message
+            global QRcode_Message, img_NG, img_OK
             if str(event.Key) != "Lshift" and str(event.Key).isdigit():
                 QRcode_Message = QRcode_Message + str(event.Key)
             elif str(event.Key) == "Return":
+                if QRcode_Message[0:4] == "2209":
+                    self.img_Result.setPixmap(img_OK)
+                else:
+                    self.img_Result.setPixmap(img_NG)
                 self.txt_Message.insertPlainText("\n")
                 self.txt_Message.insertHtml(
                     '<html><head/><body><p><span style=" color:green;font-weight:bold;font-size:45px;">' + QRcode_Message + '</span></p></body></html>')
                 self.txt_Message.moveCursor(self.txt_Message.textCursor().End)  # 文本框显示到底部
-                # print(QRcode_Message)
+                print(QRcode_Message[0:4])
+
                 QRcode_Message = ""
+
 
             return True
 
