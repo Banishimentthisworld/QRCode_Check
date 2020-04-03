@@ -1,3 +1,5 @@
+import os
+
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import *
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -18,7 +20,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # 信号槽
         # 退出按钮信号槽
-        self.bn_Exit.clicked.connect(self.close)
+        self.bn_Exit.clicked.connect(self.Exit)
         self.bn_Start.clicked.connect(self.Start)
 
         # 全局变量
@@ -47,11 +49,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def Start(self):
         def onKeyboardEvent(event):
             global QRcode_Message
-            if str(event.Key) != "Return":
+            if str(event.Key) != "Lshift" and str(event.Key).isdigit():
                 QRcode_Message = QRcode_Message + str(event.Key)
-            else:
-                print(QRcode_Message)
+            elif str(event.Key) == "Return":
+                self.txt_Message.insertPlainText("\n")
+                self.txt_Message.insertHtml(
+                    '<html><head/><body><p><span style=" color:green;font-weight:bold;font-size:45px;">' + QRcode_Message + '</span></p></body></html>')
+                self.txt_Message.moveCursor(self.txt_Message.textCursor().End)  # 文本框显示到底部
+                # print(QRcode_Message)
                 QRcode_Message = ""
+
             return True
 
         # 创建键盘监控句柄
@@ -61,5 +68,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         hm.HookKeyboard()
         #循环获取消息
         pythoncom.PumpMessages()
+
+    def Exit(self):
+        os._exit(0)
 
 
