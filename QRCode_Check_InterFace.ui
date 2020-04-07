@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>464</width>
+    <width>613</width>
     <height>486</height>
    </rect>
   </property>
@@ -24,6 +24,34 @@
        <string>操作</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_3">
+       <item row="2" column="0">
+        <widget class="QPushButton" name="bn_Exit">
+         <property name="text">
+          <string>退出</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QPushButton" name="bn_Top">
+         <property name="text">
+          <string>置顶</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QPushButton" name="bn_Stop">
+         <property name="text">
+          <string>暂停</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QPushButton" name="bn_Start">
+         <property name="text">
+          <string>   开始   </string>
+         </property>
+        </widget>
+       </item>
        <item row="2" column="1">
         <widget class="QPushButton" name="bn_TopExit">
          <property name="text">
@@ -38,31 +66,17 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
-        <widget class="QPushButton" name="bn_Exit">
+       <item row="3" column="1">
+        <widget class="QPushButton" name="bn_Save">
          <property name="text">
-          <string>退出</string>
+          <string>保存配置</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QPushButton" name="bn_Start">
+       <item row="3" column="0">
+        <widget class="QPushButton" name="bn_Zero">
          <property name="text">
-          <string>   开始   </string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QPushButton" name="bn_Stop">
-         <property name="text">
-          <string>暂停</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QPushButton" name="bn_Top">
-         <property name="text">
-          <string>置顶</string>
+          <string>清空计数</string>
          </property>
         </widget>
        </item>
@@ -81,6 +95,13 @@
           <string>结果输出</string>
          </property>
          <layout class="QGridLayout" name="_2">
+          <item row="0" column="2">
+           <widget class="QLabel" name="img_Result">
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/img/OK.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+           </widget>
+          </item>
           <item row="0" column="0">
            <widget class="QLabel" name="txt_Num">
             <property name="text">
@@ -89,9 +110,9 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QLabel" name="img_Result">
+           <widget class="QLabel" name="txt_NG">
             <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/img/OK.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;NG个数&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
@@ -105,7 +126,7 @@
          </property>
          <layout class="QGridLayout" name="gridLayout_6">
           <item row="1" column="1">
-           <widget class="QLineEdit" name="lineEdit"/>
+           <widget class="QLineEdit" name="txt_ID"/>
           </item>
           <item row="1" column="0">
            <widget class="QLabel" name="label_2">
@@ -115,7 +136,7 @@
            </widget>
           </item>
           <item row="1" column="3">
-           <widget class="QLineEdit" name="lineEdit_2"/>
+           <widget class="QLineEdit" name="txt_Num_2"/>
           </item>
           <item row="1" column="2">
            <widget class="QLabel" name="label_3">
@@ -147,7 +168,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>464</width>
+     <width>613</width>
      <height>23</height>
     </rect>
    </property>
