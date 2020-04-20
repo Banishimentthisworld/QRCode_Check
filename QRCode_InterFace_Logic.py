@@ -1,8 +1,6 @@
 import datetime
 import os
-import pypyodbc
 import pyodbc
-
 import sys
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import *
@@ -10,10 +8,10 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
-import pythoncom
+
 import PyHook3 as pyHook
 import configparser
-
+import pythoncom
 from QRCode_Check_InterFace import Ui_MainWindow
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
@@ -23,27 +21,47 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # 控件初始化
         self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)
         self.bn_Stop.setEnabled(False)
         now = datetime.datetime.now().strftime(' %Y-%m-%d ')
-        self.txt_Message.insertPlainText("--------------------------- 自动人偶书记-扫码检测 " + now + "--------------------------\n")
+        self.txt_ID.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.bn_lock.setEnabled(False)
+        self.txt_Password.setEchoMode(QLineEdit.Password)
+        self.txt_Message.insertPlainText("------------------------------------------------ 自动人偶书记-扫码检测 " + now + "--------------------------------------------\n")
+
         # 信号槽
         # 退出按钮信号槽
         self.bn_Exit.clicked.connect(self.Exit)
+        self.action_Exit.triggered.connect(self.Exit)
         # 开始按钮信号槽
         self.bn_Start.clicked.connect(self.Start)
+        self.action_Start.triggered.connect(self.Start)
         # 下拉菜单改变信号槽
         self.cmb_Type.currentIndexChanged.connect(self.cmbchange)
         # 清除数据信号槽
         self.bn_Zero.clicked.connect(self.clear)
         # 暂停按钮信号槽
         self.bn_Stop.clicked.connect(self.Stop)
+        self.action_Stop.triggered.connect(self.Stop)
         # 保存配置信号槽
-        self.bn_Save.clicked.connect(self.ODBC)
+        self.bn_Save.clicked.connect(self.Saveini)
+        # 置顶按钮信号槽
+        self.bn_Top.clicked.connect(self.Top)
+        # 取消置顶按钮信号槽
+        self.bn_TopExit.clicked.connect(self.TopExit)
+        # 最小化按钮信号槽
+        self.bn_Min.clicked.connect(self.Min)
+        # 解锁按钮信号槽
+        self.bn_unlock.clicked.connect(self.Unlock)
+        # 上锁按钮信号槽
+        self.bn_lock.clicked.connect(self.lock)
+
 
         # 全局变量
-        global QRcode_Message, img_NG, img_OK, cf, Times, NG_Times, Messages_Temp, img_NO
+        global QRcode_Message, img_NG, img_OK, cf, Times, NG_Times, Messages_Temp, img_NO, finish_Flag
         Times = 0
         NG_Times = 0
+        finish_Flag = 0
         Messages_Temp = []
         QRcode_Message = ""
         img_NG = QPixmap('NG')
@@ -90,11 +108,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.bn_Stop.setEnabled(True)
         self.bn_Start.setEnabled(False)
         def onKeyboardEvent(event):
-            global QRcode_Message, img_NG, img_OK, Times, NG_Times, Messages_Temp, img_NO
+            global QRcode_Message, img_NG, img_OK, Times, NG_Times, Messages_Temp, img_NO, finish_Flag
             now = datetime.datetime.now().strftime(' %Y-%m-%d %H:%M:%S')
+            print(event.Key)
             if str(event.Key) != "Lshift" and str(event.Key).isdigit():
                 QRcode_Message = QRcode_Message + str(event.Key)
-            elif str(event.Key) == "Return":
+
+            elif str(event.Key) != "Return" and str(event.Key) != "Lshift" :
+                QRcode_Message = QRcode_Message + str(event.Key)
+                finish_Flag += 1
+            print(finish_Flag )
+            if finish_Flag == 2:
+                finish_Flag = 0
                 try:
                     if Times < int(self.txt_Num_2.text()):
                         if QRcode_Message not in Messages_Temp:
@@ -236,7 +261,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.txt_Message.insertPlainText("\n")
         now = datetime.datetime.now().strftime(' %Y-%m-%d %H:%M:%S')
         self.txt_Message.insertHtml(
-            '<html><head/><body><p><span style=" color:white;font-weight:bold;font-size:12px;">' + "---------------------------" + now + "--------------------------\n" + '</span></p></body></html>')
+            '<html><head/><body><p><span style=" color:white;font-weight:bold;font-size:12px;">' + "-------------------------------------------" + now + "---------------------------------------\n" + '</span></p></body></html>')
         self.txt_Message.moveCursor(self.txt_Message.textCursor().End)  # 文本框显示到底部
 
     def Stop(self):
@@ -264,6 +289,39 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         crsr.commit()
         crsr.close()
         cnxn.close()
+
+    def Saveini(self):
+        global cf
+        cf.set(self.cmb_Type.currentText(), "ID",  self.txt_ID.text())
+        cf.set(self.cmb_Type.currentText(), "NUM", self.txt_Num_2.text())
+        cf.write(open("config.ini", "w"))
+
+
+    def Top(self):
+        self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)
+        self.show()
+
+    def TopExit(self):
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.show()
+
+    def Min(self):
+        self.showMinimized()
+
+    def Unlock(self):
+        if self.txt_Password.text() == "ruanjianjishu":
+            self.bn_lock.setEnabled(True)
+            self.bn_unlock.setEnabled(False)
+            self.txt_Password.setText("")
+            self.txt_ID.setFocus()
+        else:
+            self.txt_Password.setText("")
+
+    def lock(self):
+        self.bn_lock.setEnabled(False)
+        self.bn_unlock.setEnabled(True)
+        self.txt_Password.setText("")
+
 
 
 

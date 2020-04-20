@@ -2,7 +2,7 @@ from PyQt5 import QtWidgets
 import sys
 from QRCode_InterFace_Logic import MainWindow
 import qdarkstyle
-import win32gui, win32ui, win32con, win32api
+# import win32gui, win32ui, win32con, win32api
 if __name__=='__main__':
     app = QtWidgets.QApplication(sys.argv)
     mainWindow = MainWindow()
