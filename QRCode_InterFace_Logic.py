@@ -111,99 +111,104 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             global QRcode_Message, img_NG, img_OK, Times, NG_Times, Messages_Temp, img_NO, finish_Flag
             now = datetime.datetime.now().strftime(' %Y-%m-%d %H:%M:%S')
             print(event.Key)
-            if str(event.Key) != "Lshift" and str(event.Key).isdigit():
-                QRcode_Message = QRcode_Message + str(event.Key)
+            if QRcode_Message == "" and str(event.Key).isdigit() == False:
+                pass
+            else:
+                if str(event.Key) != "Lshift" and str(event.Key).isdigit():
+                    QRcode_Message = QRcode_Message + str(event.Key)
 
-            elif str(event.Key) != "Return" and str(event.Key) != "Lshift" :
-                QRcode_Message = QRcode_Message + str(event.Key)
-                finish_Flag += 1
-            print(finish_Flag )
-            if finish_Flag == 2:
-                finish_Flag = 0
-                try:
-                    if Times < int(self.txt_Num_2.text()):
-                        if QRcode_Message not in Messages_Temp:
-                            cnxn = pyodbc.connect(
-                                r'DRIVER={Microsoft Access Driver (*.mdb, *.accdb)}; DBQ=./QRCodeData.accdb')
-                            crsr = cnxn.cursor()
-                            crsr.execute("SELECT * FROM LensQRCode WHERE message=" + "'" + QRcode_Message + "'")
-                            list0 = crsr.fetchall()
-                            print(list(list0))
-                            if  list(list0) != []:
-                                print("数据库重复")
-                                Times += 1
-                                NG_Times += 1
-                                self.img_Result.setPixmap(img_NG)
-                                self.txt_Message.insertPlainText("\n")
-                                self.txt_Message.insertHtml(
-                                    '<html><head/><body><p><span style=" color:red;font-weight:bold;font-size:45px;">' + str(
-                                        Times) + ": " + QRcode_Message + "（数据库重复） "+ '</span></p></body></html>')
-                                self.txt_Message.moveCursor(self.txt_Message.textCursor().End)  # 文本框显示到底部
-                                self.txt_Num.setStyleSheet("color:WhiteSmoke;font-size:40px")
-                                self.txt_Num.setText(str(Times) + "/" + self.txt_Num_2.text())
-                                self.txt_NG.setStyleSheet("color:red;font-size:40px")
-                                self.txt_NG.setText("NG:" + str(NG_Times))
-                                crsr.close()
-                                cnxn.close()
-                            else:
-                                crsr.close()
-                                cnxn.close()
-                                Messages_Temp.append(QRcode_Message)
-                                if QRcode_Message[0:4] == self.txt_ID.text():
-                                    Times += 1
-                                    self.img_Result.setPixmap(img_OK)
-                                    self.txt_Message.insertPlainText("\n")
-                                    self.txt_Message.insertHtml(
-                                        '<html><head/><body><p><span style=" color:green;font-weight:bold;font-size:45px;">' + str(Times) + ": "+ QRcode_Message + '</span></p></body></html>')
-                                    self.txt_Message.moveCursor(self.txt_Message.textCursor().End)  # 文本框显示到底部
-                                    self.txt_Num.setText(str(Times) + "/" + self.txt_Num_2.text())
-                                    cnxn = pyodbc.connect(
-                                        r'DRIVER={Microsoft Access Driver (*.mdb, *.accdb)}; DBQ=./QRCodeData.accdb')
-                                    crsr = cnxn.cursor()
-                                    crsr.execute("INSERT INTO LensQRCode VALUES(" + str(
-                                        Times) + "," + "'" + now + "'" + "," + "'" + self.cmb_Type.currentText() + "'""," + "'" + QRcode_Message + "'" + ", " + "'OK')")
-                                    crsr.commit()
-                                    crsr.close()
-                                    cnxn.close()
-                                else:
+                elif str(event.Key) != "Return" and str(event.Key) != "Lshift" :
+                    QRcode_Message = QRcode_Message + str(event.Key)
+                    finish_Flag += 1
+                print(finish_Flag )
+                if finish_Flag >= 2:
+                    finish_Flag = 0
+                    try:
+                        if Times < int(self.txt_Num_2.text()):
+                            if QRcode_Message not in Messages_Temp:
+                                cnxn = pyodbc.connect(
+                                    r'DRIVER={Microsoft Access Driver (*.mdb, *.accdb)}; DBQ=./QRCodeData.accdb')
+                                crsr = cnxn.cursor()
+                                crsr.execute("SELECT * FROM LensQRCode WHERE message=" + "'" + QRcode_Message + "'")
+                                list0 = crsr.fetchall()
+                                print(list(list0))
+                                if  list(list0) != []:
+                                    print("数据库重复")
                                     Times += 1
                                     NG_Times += 1
                                     self.img_Result.setPixmap(img_NG)
                                     self.txt_Message.insertPlainText("\n")
                                     self.txt_Message.insertHtml(
-                                        '<html><head/><body><p><span style=" color:red;font-weight:bold;font-size:45px;">' + str(Times) + ": " + QRcode_Message + '</span></p></body></html>')
+                                        '<html><head/><body><p><span style=" color:red;font-weight:bold;font-size:45px;">' + str(
+                                            Times) + ": " + QRcode_Message + "（数据库重复） "+ '</span></p></body></html>')
                                     self.txt_Message.moveCursor(self.txt_Message.textCursor().End)  # 文本框显示到底部
                                     self.txt_Num.setStyleSheet("color:WhiteSmoke;font-size:40px")
                                     self.txt_Num.setText(str(Times) + "/" + self.txt_Num_2.text())
                                     self.txt_NG.setStyleSheet("color:red;font-size:40px")
                                     self.txt_NG.setText("NG:" + str(NG_Times))
-                                    cnxn = pyodbc.connect(
-                                        r'DRIVER={Microsoft Access Driver (*.mdb, *.accdb)}; DBQ=./QRCodeData.accdb')
-                                    crsr = cnxn.cursor()
-                                    crsr.execute("INSERT INTO LensQRCode VALUES(" + str(Times) + "," + "'" + now + "'" + "," + "'" + self.cmb_Type.currentText() + "'""," + "'" + QRcode_Message + "'" + ", " + "'NG')")
-                                    crsr.commit()
                                     crsr.close()
                                     cnxn.close()
+                                else:
+                                    crsr.close()
+                                    cnxn.close()
+                                    Messages_Temp.append(QRcode_Message)
+                                    if QRcode_Message[0:4] == self.txt_ID.text():
+                                        Times += 1
+                                        self.img_Result.setPixmap(img_OK)
+                                        self.txt_Message.insertPlainText("\n")
+                                        self.txt_Message.insertHtml(
+                                            '<html><head/><body><p><span style=" color:green;font-weight:bold;font-size:45px;">' + str(Times) + ": "+ QRcode_Message + '</span></p></body></html>')
+                                        self.txt_Message.moveCursor(self.txt_Message.textCursor().End)  # 文本框显示到底部
+                                        self.txt_Num.setText(str(Times) + "/" + self.txt_Num_2.text())
+                                        cnxn = pyodbc.connect(
+                                            r'DRIVER={Microsoft Access Driver (*.mdb, *.accdb)}; DBQ=./QRCodeData.accdb')
+                                        crsr = cnxn.cursor()
+                                        crsr.execute("INSERT INTO LensQRCode VALUES(" + str(
+                                            Times) + "," + "'" + now + "'" + "," + "'" + self.cmb_Type.currentText() + "'""," + "'" + QRcode_Message + "'" + ", " + "'OK')")
+                                        crsr.commit()
+                                        crsr.close()
+                                        cnxn.close()
+                                    else:
+                                        Times += 1
+                                        NG_Times += 1
+                                        self.img_Result.setPixmap(img_NG)
+                                        self.txt_Message.insertPlainText("\n")
+                                        self.txt_Message.insertHtml(
+                                            '<html><head/><body><p><span style=" color:red;font-weight:bold;font-size:45px;">' + str(Times) + ": " + QRcode_Message + '</span></p></body></html>')
+                                        self.txt_Message.moveCursor(self.txt_Message.textCursor().End)  # 文本框显示到底部
+                                        self.txt_Num.setStyleSheet("color:WhiteSmoke;font-size:40px")
+                                        self.txt_Num.setText(str(Times) + "/" + self.txt_Num_2.text())
+                                        self.txt_NG.setStyleSheet("color:red;font-size:40px")
+                                        self.txt_NG.setText("NG:" + str(NG_Times))
+                                        cnxn = pyodbc.connect(
+                                            r'DRIVER={Microsoft Access Driver (*.mdb, *.accdb)}; DBQ=./QRCodeData.accdb')
+                                        crsr = cnxn.cursor()
+                                        crsr.execute("INSERT INTO LensQRCode VALUES(" + str(Times) + "," + "'" + now + "'" + "," + "'" + self.cmb_Type.currentText() + "'""," + "'" + QRcode_Message + "'" + ", " + "'NG')")
+                                        crsr.commit()
+                                        crsr.close()
+                                        cnxn.close()
 
-                        else:
-                            self.img_Result.setPixmap(img_NO)
-                            self.txt_Message.insertPlainText("\n")
-                            p = Messages_Temp.index(QRcode_Message) + 1
-                            self.txt_Message.insertHtml(
-                                '<html><head/><body><p><span style=" color:#FF6100 ;font-weight:bold;font-size:45px;">'  +  str(p) + ": " + QRcode_Message + "（本盘重复镜头） "+'</span></p></body></html>')
-                            self.txt_Message.moveCursor(self.txt_Message.textCursor().End)  # 文本框显示到底部
+                            else:
+                                self.img_Result.setPixmap(img_NO)
+                                self.txt_Message.insertPlainText("\n")
+                                p = Messages_Temp.index(QRcode_Message) + 1
+                                self.txt_Message.insertHtml(
+                                    '<html><head/><body><p><span style=" color:#FF6100 ;font-weight:bold;font-size:45px;">'  +  str(p) + ": " + QRcode_Message + "（本盘重复镜头） "+'</span></p></body></html>')
+                                self.txt_Message.moveCursor(self.txt_Message.textCursor().End)  # 文本框显示到底部
 
 
-                    elif Times == int(self.txt_Num_2.text()):
-                        Times += 1
-                        print(Messages_Temp)
-                        Messages_Temp = []
-                        self.msg('已检测完整盘，请更换物料并清空计数')
+                        elif Times == int(self.txt_Num_2.text()):
+                            Times += 1
+                            print(Messages_Temp)
+                            Messages_Temp = []
+                            QRcode_Message = ""
+                            finish_Flag = 0
+                            self.msg('已检测完整盘，请更换物料并清空计数')
 
-                except:
-                    self.msg('请选择类型')
+                    except:
+                        self.msg('请选择类型')
 
-                QRcode_Message = ""
+                    QRcode_Message = ""
 
 
 
@@ -250,10 +255,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def clear(self):
 
-        global Times, NG_Times,Messages_Temp
+        global Times, NG_Times,Messages_Temp,QRcode_Message,finish_Flag
         Times = 0
         NG_Times = 0
         Messages_Temp = []
+        QRcode_Message = ""
+        finish_Flag = 0
         self.txt_Num.setStyleSheet("color:WhiteSmoke;font-size:40px")
         self.txt_Num.setText(str(Times) + "/" + self.txt_Num_2.text())
         self.txt_NG.setStyleSheet("color:red;font-size:40px")
